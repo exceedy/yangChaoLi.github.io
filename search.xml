@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[mysql 踩坑记 （一）]]></title>
+    <url>%2Fsql%2Fmysql%E8%B8%A9%E5%9D%91%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[今天某贱贱的同事，给我出了个题,关于sql查询的题，那么直接开始吧。 题目： id userid start end 1 2 18 28 2 2 34 44 3 2 24 44 获得从开始时间(start)到结束时间(end)的总时长,重复时间按一个时间算。 代码解答:123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103delimiter //CREATE PROCEDURE test() BEGINDECLARE oneStart INT;DECLARE oneEnd INT;DECLARE twoStart INT;DECLARE twoEnd INT;DECLARE count INT default 0;-- DECLARE-- start_ INT;-- DECLARE-- end_ INT;declare done int default false;DECLARE my_test CURSOR FOR ( SELECT START, END FROM ruizhi WHERE userid = 2 ORDER BY START ASC );declare continue HANDLER for not found set done = true; OPEN my_test;FETCH my_test INTO oneStart,oneEnd;read_loop:loop FETCH my_test INTO twoStart,twoEnd; if done then leave read_loop; # 跳出游标循环 end if; SELECT twoStart,twoEnd; IF twoStart &lt; oneStart THEN SET oneStart = twoStart; END IF; -- 如果第一行的结束小于第二行的开始就记录第一行的结果。并更新start为第二行。 IF oneEnd &lt; twoStart THEN SET count = count + ( oneEnd - oneStart ); SET oneStart = twoStart; SET oneEnd = twoEnd; ELSEIF twdelimiter //CREATE PROCEDURE test() BEGINDECLARE oneStart INT;DECLARE oneEnd INT;DECLARE twoStart INT;DECLARE twoEnd INT;DECLARE count INT default 0;-- DECLARE-- start_ INT;-- DECLARE-- end_ INT;declare done int default false;DECLARE my_test CURSOR FOR ( SELECT START, END FROM ruizhi WHERE userid = 2 ORDER BY START ASC );declare continue HANDLER for not found set done = true; OPEN my_test;FETCH my_test INTO oneStart,oneEnd;read_loop:loop FETCH my_test INTO twoStart,twoEnd; if done then leave read_loop; # 跳出游标循环 end if; SELECT twoStart,twoEnd; IF twoStart &lt; oneStart THEN SET oneStart = twoStart; END IF; -- 如果第一行的结束小于第二行的开始就记录第一行的结果。并更新start为第二行。 IF oneEnd &lt; twoStart THEN SET count = count + ( oneEnd - oneStart ); SET oneStart = twoStart; SET oneEnd = twoEnd; ELSEIF twoEnd &gt; oneEnd THEN-- 第二行开始时间包含在第一行，那么对比结束时间 SET oneEnd = twoEnd; END IF ;-- SELECT start_,end_,count;end loop;SET count = count + ( oneEnd - oneStart ); CLOSE my_test ;SELECT count;END // delimiter ;call test();oEnd &gt; oneEnd THEN-- 第二行开始时间包含在第一行，那么对比结束时间 SET oneEnd = twoEnd; END IF ;-- SELECT start_,end_,count;end loop;SET count = count + ( oneEnd - oneStart ); CLOSE my_test ;SELECT count;END // delimiter ;call test(); 代码解析 声明：declare declare data data_type。声明变量，declare使用时需要注意放在BEGIN …END 之间，并且是所有其他语句之前。 浮标：cursor 创建浮标： declare cur cursor for select * from test; 打开浮标 open cur； 获取浮标当前位置的值并赋值给变量，浮标位置前进一位 fetch cur into data； 开启浮标循环 read_loop:loop; 退出浮标循环 leave read_loop; 浮标循环实例 123456789101112 declare done int default false; --设置浮标控制变量 DECLARE my_test CURSOR FOR ( SELECT START, END FROM ruizhi WHERE userid = 2 ORDER BY START ASC );--创建浮标 declare continue HANDLER for not found set done = true; --浮标查询结束后返回。 open my_test; --打开浮标 read_loop:loop;--开启浮标循环 fetch my_test into data;--获取浮标当前位置内容并前进一。 if done then leave read_loop;--退出loop循环 end if；end loop；--使用loop，必须要关闭。close my_test;--关闭浮标 while 循环 123while boolean do 业务end while; if 语句 12345if boolean then 业务，这里要注意写法和java相同，每行都要以";"结尾else业务 同上end if； 存储过程 CREATE PROCEDURE test() begin end; 开始要进行结束符转化 delimiter // – 设置结尾符为”//“]]></content>
+      <categories>
+        <category>sql</category>
+      </categories>
+      <tags>
+        <tag>msyql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[docker 踩坑记 （一）]]></title>
+    <url>%2Flinux%2Fdocker%2Fdocker%E8%B8%A9%E5%9D%91%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%2F</url>
+    <content type="text"><![CDATA[直奔主题吧，介绍文会新建一个，这里直接就开始安装使用吧 CentOS 7 安装docker CentOS 可以直接使用命令行安装： 1$ sudo yum install docker 测试Docker版本 1.运行 --version``` 可以查看docker版本1 $ docker –version Docker version 1.13.1, build b2f74b2/1.13.1 12.运行 ```docker info``` 查看docker安装的更多详细信息 $ docker info Containers: 7 Running: 0 Paused: 0 Stopped: 7 Images: 3 Server Version: 1.13.1 Storage Driver: overlay2 Backing Filesystem: xfs Supports d_type: true Native Overlay Diff: true Logging Driver: journald Cgroup Driver: systemd .... 123#### 测试Docker安装1. 通过运行简单的Docker镜像hello-world来测试安装是否有效 $ docker run hello-world Unable to find image &apos;hello-world:latest&apos; locally latest: Pulling from library/hello-world ca4f61b1923c: Pull complete Digest: sha256:ca0eeb6fb05351dfc8759c20733c91def84cb8007aa89a5bf606bc8b315b9fc7 Status: Downloaded newer image for hello-world:latest Hello from Docker! This message shows that your installation appears to be working correctly. ... 122. 列出hello-world 下载到虚拟机的镜像 docker image ls 13. 列出 hello-world 在显示其消息后退出的容器，如果它仍在运行，将不需要 --all选项； docker container ls –all CONTAINER ID IMAGE COMMAND CREATED STATUS 54f4984ed6a8 hello-world “/hello” 20 seconds ago Exited (0) 19 seconds ago `]]></content>
+      <categories>
+        <category>linux</category>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[SpringBoot 踩坑记 之 集成webSocket （二）]]></title>
     <url>%2FSpringBoot%2FwebSocket%2FSpringBoot%20%E8%B8%A9%E5%9D%91%E8%AE%B0%20%E4%B9%8B%20%20%E9%9B%86%E6%88%90webSocket%EF%BC%88%E4%BA%8C%EF%BC%89%2F</url>
     <content type="text"><![CDATA[基于stomp版的，啊，有个demo，但是还没实际用过，不想写怎么办，在线等，一点也不急那种。]]></content>
